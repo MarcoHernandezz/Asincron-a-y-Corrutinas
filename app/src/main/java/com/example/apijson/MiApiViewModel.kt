@@ -11,8 +11,12 @@ class MiApiViewModel : ViewModel() {
     // Estado para el personaje actual
     val personajeActual = MutableLiveData<Personaje?>()
     val errorMsg = MutableLiveData<String>()
+    
+    // Lista completa para la UI
+    private var _listaPersonajes: List<Personaje> = emptyList()
+    val listaPersonajesNombres: List<String>
+        get() = _listaPersonajes.mapIndexed { index, personaje -> "${index + 1}. ${personaje.fullName}" }
 
-    private var listaPersonajes: List<Personaje> = emptyList()
     private var indiceActual = 0
 
     // Configuración de Retrofit
@@ -30,8 +34,8 @@ class MiApiViewModel : ViewModel() {
     private fun cargarTodosLosPersonajes() {
         viewModelScope.launch {
             try {
-                listaPersonajes = api.obtenerPersonajes()
-                if (listaPersonajes.isNotEmpty()) {
+                _listaPersonajes = api.obtenerPersonajes()
+                if (_listaPersonajes.isNotEmpty()) {
                     mostrarPersonaje(0)
                 }
             } catch (e: Exception) {
@@ -41,13 +45,27 @@ class MiApiViewModel : ViewModel() {
     }
 
     fun siguientePersonaje() {
-        if (listaPersonajes.isNotEmpty()) {
-            indiceActual = (indiceActual + 1) % listaPersonajes.size
+        if (_listaPersonajes.isNotEmpty()) {
+            indiceActual = (indiceActual + 1) % _listaPersonajes.size
+            mostrarPersonaje(indiceActual)
+        }
+    }
+
+    fun anteriorPersonaje() {
+        if (_listaPersonajes.isNotEmpty()) {
+            indiceActual = if (indiceActual - 1 < 0) _listaPersonajes.size - 1 else indiceActual - 1
+            mostrarPersonaje(indiceActual)
+        }
+    }
+
+    fun seleccionarPersonaje(index: Int) {
+        if (index in _listaPersonajes.indices) {
+            indiceActual = index
             mostrarPersonaje(indiceActual)
         }
     }
 
     private fun mostrarPersonaje(index: Int) {
-        personajeActual.postValue(listaPersonajes[index])
+        personajeActual.postValue(_listaPersonajes[index])
     }
 }

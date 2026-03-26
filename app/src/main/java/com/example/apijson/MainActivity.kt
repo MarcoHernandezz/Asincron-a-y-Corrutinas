@@ -1,5 +1,6 @@
 package com.example.apijson
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageView
@@ -32,7 +33,9 @@ class MainActivity : AppCompatActivity() {
         val tvTitulo = findViewById<TextView>(R.id.tvTitulo)
         val tvFamilia = findViewById<TextView>(R.id.tvFamilia)
         val ivPersonaje = findViewById<ImageView>(R.id.ivPersonaje)
+        val btnAnterior = findViewById<Button>(R.id.btnAnterior)
         val btnSiguiente = findViewById<Button>(R.id.btnSiguiente)
+        val btnVerTodos = findViewById<Button>(R.id.btnVerTodos)
 
         // Inicializar el ViewModel
         viewModel = ViewModelProvider(this)[MiApiViewModel::class.java]
@@ -58,9 +61,29 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
         }
 
-        // Configurar botón
+        // Configurar botones de navegación
+        btnAnterior.setOnClickListener {
+            viewModel.anteriorPersonaje()
+        }
+
         btnSiguiente.setOnClickListener {
             viewModel.siguientePersonaje()
+        }
+
+        // Mostrar lista completa de personajes en un diálogo
+        btnVerTodos.setOnClickListener {
+            val nombres = viewModel.listaPersonajesNombres.toTypedArray()
+            if (nombres.isNotEmpty()) {
+                AlertDialog.Builder(this)
+                    .setTitle("Lista de Personajes")
+                    .setItems(nombres) { _, which ->
+                        viewModel.seleccionarPersonaje(which)
+                    }
+                    .setNegativeButton("Cerrar", null)
+                    .show()
+            } else {
+                Toast.makeText(this, "Cargando lista...", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
