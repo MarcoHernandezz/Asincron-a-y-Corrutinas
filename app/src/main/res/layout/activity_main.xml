@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16.dp"
+    android:padding="16dp"
     tools:context=".MainActivity">
 
     <com.google.android.material.card.MaterialCardView
@@ -15,7 +15,8 @@
         app:cardCornerRadius="16dp"
         app:cardElevation="8dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/btnSiguiente">
+        app:layout_constraintBottom_toTopOf="@+id/btnSiguiente"
+        app:layout_constraintVertical_chainStyle="packed">
 
         <LinearLayout
             android:layout_width="match_parent"

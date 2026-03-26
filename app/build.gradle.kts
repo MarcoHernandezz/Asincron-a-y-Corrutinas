@@ -45,13 +45,14 @@ dependencies {
     // Lifecycle and ViewModel
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
     
     // Retrofit
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
 
-    // Coil for Image Loading
-    implementation(libs.coil)
+    // Coil for Image Loading (Classic View version)
+    implementation("io.coil-kt:coil:2.5.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
