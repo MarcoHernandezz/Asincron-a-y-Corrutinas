@@ -8,8 +8,12 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class MiApiViewModel : ViewModel() {
-    // Estado para la UI usando LiveData para XML
-    val resultadoTexto = MutableLiveData<String>().apply { value = "Cargando personajes... " }
+    // Estado para el personaje actual
+    val personajeActual = MutableLiveData<Personaje?>()
+    val errorMsg = MutableLiveData<String>()
+
+    private var listaPersonajes: List<Personaje> = emptyList()
+    private var indiceActual = 0
 
     // Configuración de Retrofit
     private val retrofit = Retrofit.Builder()
@@ -20,22 +24,30 @@ class MiApiViewModel : ViewModel() {
     private val api = retrofit.create(ApiService::class.java)
 
     init {
-        llamarApi()
+        cargarTodosLosPersonajes()
     }
 
-    private fun llamarApi() {
+    private fun cargarTodosLosPersonajes() {
         viewModelScope.launch {
             try {
-                val personajes = api.obtenerPersonajes()
-                if (personajes.isNotEmpty()) {
-                    val p = personajes[0]
-                    resultadoTexto.postValue("Primer personaje: ${p.fullName} (${p.title}) de la casa ${p.family}")
-                } else {
-                    resultadoTexto.postValue("No se encontraron personajes.")
+                listaPersonajes = api.obtenerPersonajes()
+                if (listaPersonajes.isNotEmpty()) {
+                    mostrarPersonaje(0)
                 }
             } catch (e: Exception) {
-                resultadoTexto.postValue("Error de conexión: ${e.localizedMessage}")
+                errorMsg.postValue("Error: ${e.localizedMessage}")
             }
         }
+    }
+
+    fun siguientePersonaje() {
+        if (listaPersonajes.isNotEmpty()) {
+            indiceActual = (indiceActual + 1) % listaPersonajes.size
+            mostrarPersonaje(indiceActual)
+        }
+    }
+
+    private fun mostrarPersonaje(index: Int) {
+        personajeActual.postValue(listaPersonajes[index])
     }
 }
